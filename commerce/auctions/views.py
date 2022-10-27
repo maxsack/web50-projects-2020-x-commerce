@@ -70,3 +70,6 @@ def categories(request):
 
 def createlisting(request):
     return render(request, "auctions/createlisting.html")
+
+def listing(request):
+    return render(request, "auctions/listing.html")
