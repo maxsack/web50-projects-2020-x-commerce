@@ -3,5 +3,30 @@
 {% block body %}
     <h2>Active Listings</h2>
 
-    TODO
+    <form action="{% url 'categoryfilter' %}" method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="category">Filter by category:</label>
+            <select id="category" name="category">
+                <option disabled="" selected="">Choose a category</option>
+                {% for category in categories %}
+                    <option>{{ category.categoryName }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-light">filter</button>
+        </div>
+    </form>
+
+    <div class="card-deck">
+        {% for listing in listings %}
+            <div class="card">
+                <img class="card-img-top" src="{{ listing.imageUrl }}" alt="{{ listing.title }}">
+                <div class="card-body">
+                    <h5 class="card-title"><a href="">{{ listing.title }}</a></h5>
+                    <p class="card-text">{{ listing.description }}</p>
+                    <p class="card-text"><small class="text-muted">{{ listing.price }} £</small></p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
 {% endblock %}

@@ -8,7 +8,19 @@ from .models import User, Category, Listing
 
 
 def index(request):
-    return render(request, "auctions/index.html")
+    return render(request, "auctions/index.html", {
+        "listings": Listing.objects.filter(isActive=True),
+        "categories": Category.objects.all()
+    })
+
+def categoryfilter(request):
+    if request.method == "POST":
+        category = request.POST['category']
+        cat = Category.objects.get(categoryName=category)
+        return render(request, "auctions/index.html", {
+            "listings": Listing.objects.filter(isActive=True, category=cat),
+            "categories": Category.objects.all()
+        })
 
 
 def login_view(request):
@@ -64,9 +76,6 @@ def register(request):
 
 def watchlist(request):
     return render(request, "auctions/watchlist.html")
-
-def categories(request):
-    return render(request, "auctions/categories.html")
 
 def createlisting(request):
     if request.method == "GET":
