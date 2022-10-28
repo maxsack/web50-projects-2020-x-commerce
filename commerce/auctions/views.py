@@ -53,9 +53,33 @@ def createlisting(request):
 
 def listing(request, id):
     if request.method == "GET":
+        listing_data = Listing.objects.get(pk=id)
+        current_user = request.user
+        watchlist_data = listing_data.watchlist.all()
+        in_watchlist = current_user in watchlist_data
         return render(request, "auctions/listing.html", {
-            "listing": Listing.objects.get(pk=id),
+            "listing": listing_data,
+            "in_watchlist": in_watchlist
         })
+
+def watchlist(request):
+    current_user = request.user
+    listings = current_user.watchlistListing.all()
+    return render(request, "auctions/watchlist.html", {
+        "listings": listings
+    })
+
+def removewatchlist(request, id):
+    data = Listing.objects.get(pk=id)
+    user = request.user
+    data.watchlist.remove(user)
+    return HttpResponseRedirect(reverse("listing", args=(id, )))
+
+def addwatchlist(request, id):
+    data = Listing.objects.get(pk=id)
+    user = request.user
+    data.watchlist.add(user)
+    return HttpResponseRedirect(reverse("listing", args=(id, )))
 
 
 def login_view(request):
@@ -108,9 +132,6 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "auctions/register.html")
-
-def watchlist(request):
-    return render(request, "auctions/watchlist.html")
 
 def categories(request):
     return render(request, "auctions/categories.html")
