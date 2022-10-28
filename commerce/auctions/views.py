@@ -111,3 +111,6 @@ def register(request):
 
 def watchlist(request):
     return render(request, "auctions/watchlist.html")
+
+def categories(request):
+    return render(request, "auctions/categories.html")
