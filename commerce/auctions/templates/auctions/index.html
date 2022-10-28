@@ -19,10 +19,10 @@
 
     <div class="card-deck">
         {% for listing in listings %}
-            <div class="card">
+            <div class="card" style="width: 18rem;">
                 <img class="card-img-top" src="{{ listing.imageUrl }}" alt="{{ listing.title }}">
                 <div class="card-body">
-                    <h5 class="card-title"><a href="">{{ listing.title }}</a></h5>
+                    <h5 class="card-title"><a href="{% url 'listing' id=listing.id %}">{{ listing.title }}</a></h5>
                     <p class="card-text">{{ listing.description }}</p>
                     <p class="card-text"><small class="text-muted">{{ listing.price }} £</small></p>
                 </div>

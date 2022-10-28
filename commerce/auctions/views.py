@@ -22,6 +22,41 @@ def categoryfilter(request):
             "categories": Category.objects.all()
         })
 
+def createlisting(request):
+    if request.method == "GET":
+        return render(request, "auctions/createlisting.html", {
+            "categories": Category.objects.all()
+        })
+    else:
+        # Get form data
+        title = request.POST["title"]
+        description = request.POST["description"]
+        price = request.POST["price"]
+        img = request.POST["img"]
+        cat = request.POST["category"]
+        owner = request.user
+        # get category data
+        category = Category.objects.get(categoryName = cat)
+        # create new listing object
+        newlisting = Listing(
+            title = title,
+            description = description,
+            price = float(price),
+            imageUrl = img,
+            owner = owner,
+            category = category
+        )
+        # insert object in database
+        newlisting.save()
+        #redirect to index page
+        return HttpResponseRedirect(reverse("index"))
+
+def listing(request, id):
+    if request.method == "GET":
+        return render(request, "auctions/listing.html", {
+            "listing": Listing.objects.get(pk=id),
+        })
+
 
 def login_view(request):
     if request.method == "POST":
@@ -76,35 +111,3 @@ def register(request):
 
 def watchlist(request):
     return render(request, "auctions/watchlist.html")
-
-def createlisting(request):
-    if request.method == "GET":
-        return render(request, "auctions/createlisting.html", {
-            "categories": Category.objects.all()
-        })
-    else:
-        # Get form data
-        title = request.POST["title"]
-        description = request.POST["description"]
-        price = request.POST["price"]
-        img = request.POST["img"]
-        cat = request.POST["category"]
-        owner = request.user
-        # get category data
-        category = Category.objects.get(categoryName = cat)
-        # create new listing object
-        newlisting = Listing(
-            title = title,
-            description = description,
-            price = float(price),
-            imageUrl = img,
-            owner = owner,
-            category = category
-        )
-        # insert object in database
-        newlisting.save()
-        #redirect to index page
-        return HttpResponseRedirect(reverse("index"))
-
-def listing(request):
-    return render(request, "auctions/listing.html")
