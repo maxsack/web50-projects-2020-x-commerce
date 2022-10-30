@@ -6,10 +6,11 @@ class User(AbstractUser):
     pass
 
 class Category(models.Model):
-    categoryName = models.CharField(max_length=64)
+    name = models.CharField(max_length=64)
+    img = models.CharField(max_length=1000, blank=True, null=True)
 
     def __str__(self):
-        return self.categoryName
+        return self.name
 
 class Listing(models.Model):
     title = models.CharField(max_length=64)

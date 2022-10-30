@@ -3,5 +3,18 @@
 {% block body %}
     <h2>Categories</h2>
 
-    TODO
+    <div class="card-deck">
+        {% for category in categories %}
+            <div class="card" style="width: 18rem;">
+                <img class="card-img-top" src="{{ category.img }}" alt="{{ category.name }}">
+                <div class="card-body">
+                    <form action="{% url 'category' %}" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" value="{{ category.name }}" id="category" name="category">
+                        <h5 class="card-title"><button class="btn btn-link" type="submit">{{ category.name }}</button></h5>
+                    </form>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
 {% endblock %}

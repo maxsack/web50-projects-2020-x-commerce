@@ -16,7 +16,7 @@ def index(request):
 def categoryfilter(request):
     if request.method == "POST":
         category = request.POST['category']
-        cat = Category.objects.get(categoryName=category)
+        cat = Category.objects.get(name=category)
         return render(request, "auctions/index.html", {
             "listings": Listing.objects.filter(isActive=True, category=cat),
             "categories": Category.objects.all()
@@ -36,7 +36,7 @@ def createlisting(request):
         cat = request.POST["category"]
         owner = request.user
         # get category data
-        category = Category.objects.get(categoryName = cat)
+        category = Category.objects.get(name = cat)
         # create new listing object
         newlisting = Listing(
             title = title,
@@ -58,9 +58,9 @@ def listing(request, id):
         watchlist_data = listing_data.watchlist.all()
         in_watchlist = current_user in watchlist_data
         return render(request, "auctions/listing.html", {
-            "listing": listing_data,
-            "in_watchlist": in_watchlist
-        })
+                "listing": listing_data,
+                "in_watchlist": in_watchlist
+            })
 
 def watchlist(request):
     current_user = request.user
@@ -80,6 +80,20 @@ def addwatchlist(request, id):
     user = request.user
     data.watchlist.add(user)
     return HttpResponseRedirect(reverse("listing", args=(id, )))
+
+def bid(request, id):
+    if request.method == "POST":
+        bid = request.POST["bid"]
+        update_data = Listing.objects.get(pk=id)
+        update_data.price = float(bid)
+        update_data.save(['price'])
+        current_user = request.user
+        watchlist_data = update_data.watchlist.all()
+        in_watchlist = current_user in watchlist_data
+        return render(request, "auctions/listing.html", {
+                "listing": update_data,
+                "in_watchlist": in_watchlist
+            })
 
 
 def login_view(request):
@@ -134,4 +148,6 @@ def register(request):
         return render(request, "auctions/register.html")
 
 def categories(request):
-    return render(request, "auctions/categories.html")
+    return render(request, "auctions/categories.html", {
+        "categories": Category.objects.all()
+    })

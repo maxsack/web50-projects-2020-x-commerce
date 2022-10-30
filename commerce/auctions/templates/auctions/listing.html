@@ -21,19 +21,25 @@
     
 
     <div class="card">
-        <img class="card-img-top" style="width: 18rem;" src="{{ listing.imageUrl }}" alt="{{ listing.title }}">
-        <div class="card-body">
-            <p class="card-text">{{ listing.description }}</p>
-            <p class="card-text">Listed by: {{ listing.owner }}</p>
-            <h5 class="card-title">£ {{ listing.price }}</h5>
-            <form class="form-inline">
-                {% csrf_token %}
-                <div class="form-group mb-2">
-                    <label for="bid">Bid:</label>
-                    <input class="form-control mx-sm-3" type="number" placeholder="place your bid" id="bid" name="bid">
-                </div>
-                <button type="submit" class="btn btn-outline-primary mb-2">Bid!</button>
-            </form>
+        <div class="row">
+            <div class="card-body col-sm-4">
+                <img class="card-img-top" style="width: 18rem;" src="{{ listing.imageUrl }}" alt="{{ listing.title }}">
+            </div>
+            <div class="card-body col-sm-6">
+                <p class="card-text">{{ listing.description }}</p>
+                <p class="card-text">Listed by: {{ listing.owner }}</p>
+                <h5 class="card-title">£ {{ listing.price }}</h5>
+                {% if user.is_authenticated %}
+                    <form action="{% url 'bid' id=listing.id %}" class="form-inline">
+                        {% csrf_token %}
+                        <div class="form-group mb-2">
+                            <label for="bid">Bid:</label>
+                            <input class="form-control mx-sm-3" type="number" placeholder="place your bid" id="bid" name="bid">
+                        </div>
+                        <button type="submit" class="btn btn-outline-primary mb-2">Bid!</button>
+                    </form>
+                {% endif %}
+            </div>
         </div>
     </div>
 
