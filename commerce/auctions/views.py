@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, Category, Listing
+from .models import User, Category, Listing, Comment, Bid
 
 
 def index(request):
@@ -37,11 +37,17 @@ def createlisting(request):
         owner = request.user
         # get category data
         category = Category.objects.get(name = cat)
+        # create new bid
+        bid = Bid(
+            bid = int(price),
+            bidder = owner
+        )
+        bid.save()
         # create new listing object
         newlisting = Listing(
             title = title,
             description = description,
-            price = float(price),
+            price = bid,
             imageUrl = img,
             owner = owner,
             category = category
@@ -57,10 +63,14 @@ def listing(request, id):
         current_user = request.user
         watchlist_data = listing_data.watchlist.all()
         in_watchlist = current_user in watchlist_data
+        comments = Comment.objects.filter(listing=listing_data)
+        is_owner = request.user.username == listing_data.owner.username
         return render(request, "auctions/listing.html", {
                 "listing": listing_data,
-                "in_watchlist": in_watchlist
-            })
+                "in_watchlist": in_watchlist,
+                "comments": comments,
+                "is_owner": is_owner
+        })
 
 def watchlist(request):
     current_user = request.user
@@ -82,19 +92,58 @@ def addwatchlist(request, id):
     return HttpResponseRedirect(reverse("listing", args=(id, )))
 
 def bid(request, id):
-    if request.method == "POST":
-        bid = request.POST["bid"]
-        update_data = Listing.objects.get(pk=id)
-        update_data.price = float(bid)
-        update_data.save(['price'])
-        current_user = request.user
-        watchlist_data = update_data.watchlist.all()
-        in_watchlist = current_user in watchlist_data
+    bid = request.POST['bid']
+    data = Listing.objects.get(pk=id)
+    watchlist_data = data.watchlist.all()
+    in_watchlist = request.user in watchlist_data
+    comments = Comment.objects.filter(listing=data)
+    if int(bid) > data.price.bid:
+        update = Bid(bidder=request.user, bid=int(bid))
+        update.save()
+        data.price = update
+        data.save()
         return render(request, "auctions/listing.html", {
-                "listing": update_data,
-                "in_watchlist": in_watchlist
-            })
+                "listing": data,
+                "in_watchlist": in_watchlist,
+                "comments": comments,
+                "message": "Your bid was placed. You're the highest bidder now.",
+                "update": True
+        })
+    else:
+        return render(request, "auctions/listing.html", {
+                "listing": data,
+                "in_watchlist": in_watchlist,
+                "comments": comments,
+                "message": "ERROR! Your bid wasn't placed. Please try again.",
+                "update": False
+        })
 
+def auctionclosed(request, id):
+    data = Listing.objects.get(pk=id)
+    data.isActive = False
+    data.save()
+    watchlist_data = data.watchlist.all()
+    in_watchlist = request.user in watchlist_data
+    comments = Comment.objects.filter(listing=data)
+    return render(request, "auctions/listing.html", {
+                "listing": data,
+                "in_watchlist": in_watchlist,
+                "comments": comments,
+                "message": "Auction closed successfully!",
+                "update": True
+        })
+
+def comment(request, id):
+    current_user = request.user
+    data = Listing.objects.get(pk=id)
+    message = request.POST['newcomment']
+    newComment = Comment (
+        author = current_user,
+        listing = data,
+        message = message
+    )
+    newComment.save()
+    return HttpResponseRedirect(reverse("listing", args=(id, )))
 
 def login_view(request):
     if request.method == "POST":
@@ -149,5 +198,11 @@ def register(request):
 
 def categories(request):
     return render(request, "auctions/categories.html", {
+        "categories": Category.objects.all()
+    })
+
+def closedauctions(request):
+    return render(request, "auctions/closedauctions.html", {
+        "listings": Listing.objects.filter(isActive=False),
         "categories": Category.objects.all()
     })

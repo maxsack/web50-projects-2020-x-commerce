@@ -13,7 +13,7 @@
                     <div class="card-body">
                         <h5 class="card-title"><a href="{% url 'listing' id=listing.id %}">{{ listing.title }}</a></h5>
                         <p class="card-text">{{ listing.description }}</p>
-                        <h6 class="card-text">£ {{ listing.price }}</h6>
+                        <h6 class="card-text">{{ listing.price.bid }} ʛ<small>(Galleon)</small></h6>
                     </div>
                 </div>
             </div>
