@@ -42,6 +42,6 @@ Finally, take a look at `auctions/models.py`. This is where you will define any 
 
 ## My Solution:
 ### Code
-The my solution in this [Repository](https://github.com/tinasack/web50-projects-2020-x-commerce) on GitHub.
+See my solution in this [Repository](https://github.com/tinasack/web50-projects-2020-x-commerce) on GitHub.
 ### Demo
 See the app in action on [YouTube](https://youtu.be/BqJizZyBzp0)
