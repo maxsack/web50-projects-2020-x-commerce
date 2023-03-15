@@ -1,4 +1,6 @@
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 
 from . import views
 
@@ -18,4 +20,4 @@ urlpatterns = [
     path("auctionclosed/<int:id>", views.auctionclosed, name="auctionclosed"),
     path("closedauctions", views.closedauctions, name="closedauctions"),
     path("categories", views.categories, name="categories")
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
